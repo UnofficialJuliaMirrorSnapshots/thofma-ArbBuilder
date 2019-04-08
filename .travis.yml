@@ -1,0 +1,39 @@
+language: julia
+os:
+  - linux
+julia:
+  - 1.0
+notifications:
+  email: false
+git:
+  depth: 99999999
+cache:
+  timeout: 1000
+  directories:
+    - downloads
+env:
+  global:
+    - BINARYBUILDER_DOWNLOADS_CACHE=downloads
+    - BINARYBUILDER_AUTOMATIC_APPLE=true
+sudo: required
+
+# Before anything else, get the latest versions of things
+before_script:
+  - julia -e 'using Pkg; pkg"add BinaryProvider"; pkg"add BinaryBuilder#master"; Pkg.build()'
+
+script:
+  - julia build_tarballs.jl
+
+
+deploy:
+    provider: releases
+    api_key:
+        # Note; this api_key is only valid for thofma/ArbBuilder; you need
+        # to make your own: https://docs.travis-ci.com/user/deployment/releases/
+        secure: PHav7pth5OZqUEmZqN0sCKvOFWrZGCT9uJ1T8CSR1pj/V9lxAFg2N0+TjapYigPXsnM6MHa0ml/VIMj6iesaUCBaAGTdXHrXD81lj6mhxxiSSULialpGw6cj1rPGfwF3mKXL0llNH/wFi8tHaMAZ6rE8nNgpddrupVA+sCj898K9MCzqMfJtJ4QhhiqsMcIAdp69ahUjz5pZc0hfW9xTo3nSVj75BIa+mMKQwt6/qU13SnsdVI0os0yIVQWyqIiIXDfRcWwANUGhnqHa7qrplgUrCc5K1JodX3fy8C1R6lgvpj3afoEouP7BphhMjiF+FdeEivzOJOpDTkzLnpOGBEWfkARgqI2aAAoXb38iEMJkMASJZaZZUqmg8fPHL7prBzx3yp4WiS6qusuXbomX+L3UgX1KPA7mCQFb+3dAN4p0lhsA/bLby1DFtutePOIL8Z6+wanS3r2J/PdM+MAs868P6F7SjgvOLjU813v0ypU74sMSmcE4O9v2rJ6+lD89tlNz1E6fsADy9BiKH+ROHX1McU9mPzx5KBX7JqYzgxktDBgph5cV7flslRQTHmsUvuVFSLMPlI5X59yU1O9CVnWHnHlUSJGrFWVNaYn7C/rB852PndQoAPLiKbShrYQZlJKSiymw7H2I1/1ItbWv0fAHPOm6i+MVbzN/DRLQJ8I=
+    file_glob: true
+    file: products/*
+    skip_cleanup: true
+    on:
+        repo: thofma/ArbBuilder
+        tags: true
